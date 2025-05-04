@@ -6,10 +6,7 @@ import java.util.List;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-
-        Peticiones peticiones = new Peticiones();
-        peticiones.obtenerTasasDisponibles();
-        List<String> tasas = peticiones.listaTasasPedidas();
-        tasas.forEach(System.out::println);
+        Menu menu = new Menu();
+        menu.menu();
     }
 }

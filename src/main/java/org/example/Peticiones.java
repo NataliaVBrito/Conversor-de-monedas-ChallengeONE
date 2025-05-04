@@ -39,39 +39,24 @@ public class Peticiones {
         }
     }
 
-    public List<String> listaTasasPedidas() {
-        List<String> lista = new ArrayList<>();
-
+    public String tasaPedida(String peticion) {
         try {
             HttpResponse<String> response = obtenerRespuesta();
 
             Gson gson = new Gson();
             Moneda moneda = gson.fromJson(response.body(), Moneda.class);
 
-            if (moneda.rates == null) {
+            if (!moneda.rates.containsKey(peticion)) {
                 String error = "No se pudo obtener las tasas de cambio.";
-                lista.add(error);
-                return lista;
-            }
-
-            Map<String, Double> rates = moneda.rates;
-
-            if (rates != null) {
-                for (String tipoMoneda : List.of("ARS", "USD", "BRL", "BOB", "CLP", "COP")) {
-                    if (rates.containsKey(tipoMoneda)) {
-                        lista.add(tipoMoneda + ": " + String.format("%.2f", rates.get(tipoMoneda)));
-                    } else {
-                        lista.add(tipoMoneda + ": No disponible");
-                    }
-                }
+                //lista.add(error);
+                return error;
             } else {
-                lista.add("No hay tasas disponibles.");
+                System.out.println(peticion + ": " + String.format("%.2f", moneda.rates.get(peticion)));
             }
-
         } catch (IOException | InterruptedException e) {
-            System.out.println("Error al listar tasas: " + e.getMessage());
+            return "Error al obtener las tasas de cambio." + e.getMessage();
         }
-        return lista;
+        return "Error. Verifica poner un valor valido";
     }
 
     public void convertirMoneda(String monedaACambiar, String monedaCambio, double monto) {
@@ -98,7 +83,6 @@ public class Peticiones {
 
             DecimalFormat df = new DecimalFormat("#,##0.0000");
             System.out.println(monto + " " + monedaACambiar + " = " + df.format(resultado) + " " + monedaCambio);
-
         } catch (IOException | InterruptedException e) {
             System.out.println("Error al realizar la conversión: " + e.getMessage());
         }
